@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-my $usage = "$0 reads1 reads2 cutsite output_directory\n
+my $usage = "$0 reads1 reads2 cutsite cutsite_remnant output_directory\n
  This script will go through pair-end GBS data and validate the pair-ends
 themselves. It will assume data has been trimmed of adapter and reverse-
 complement barcode, and that it shouldn't have any internal cut sites.
@@ -21,19 +21,22 @@ This way, reads that are in the wrong place are reported as broken pairs.
 3. Individual reads: As the name implies, map in single-end mode.
 
  The cutsite will be put in a regular expression, so it can be written as
-a regex. For example, ApeKI remnant cut site would be C[AT]GC.
+a regex. For example, ApeKI remnant cut site would be GC[AT]GC. For the
+remnant, it'll be C[AT]GC. Note that both cut site and remnant have to
+be included even if they are the same!
 \n";
 
-unless ($#ARGV == 3) {
+unless ($#ARGV == 4) {
     die $usage;
 }
 
 open (R1, $ARGV[0]) || die;
 open (R2, $ARGV[1]) || die;
 my $cut = $ARGV[2];
-open (W1, ">$ARGV[3]/$ARGV[0]") || die;
-open (W2, ">$ARGV[3]/$ARGV[1]") || die;
-open (W3, ">$ARGV[3]/$ARGV[0].singles.fq") || die;
+my $rmn = $ARGV[3];
+open (W1, ">$ARGV[4]/$ARGV[0]") || die;
+open (W2, ">$ARGV[4]/$ARGV[1]") || die;
+open (W3, ">$ARGV[4]/$ARGV[0].singles.fq") || die;
 
 my $discarded = 0;
 my $paired;
@@ -59,9 +62,9 @@ LOOP: while (<R1>) {
 
     # First, we count the total number of cutsites, it shouldn't be more than
     # 1 per read! And we only want cut sites in the middle. First thing, check
-    # that both reads have a cut site in the beginning. If not, discard them.
+    # that both reads have a remnant in the beginning. If not, discard them.
 
-    if ($x[1] !~ /^$cut/ || $y[1] !~ /^$cut/) {
+    if ($x[1] !~ /^$rmn/ || $y[1] !~ /^$rmn/) {
         $discarded++;
         next LOOP;
     }
@@ -82,13 +85,13 @@ LOOP: while (<R1>) {
     }
     else {
         $unpaired++;
-        $x[1] =~ s/^($cut.*?$cut).*/\1/;
-        $y[1] =~ s/^($cut.*?$cut).*/\1/;
+        $x[1] =~ s/^($rmn.*?$cut).*/\1/;
+        $y[1] =~ s/^($rmn.*?$cut).*/\1/;
 
 	# Note that proper non-chimeric GBS tags that are shorter than the
 	# read length have two cut sites (what they read depends on whether
-  # the cut site is a palindrome), so the regexp above might or might
-  # not catch them. if it does, they will STILL be placed
+	# the cut site is a palindrome), so the regexp above might or might
+	# not catch them. if it does, they will STILL be placed
 	# in the unpaired list, but that makes sense. FWD and REV are
 	# identical, so pair-end mapping makes zero sense (and can break some
 	# mapping software to boot). In principle the pair-end overlap might
@@ -103,7 +106,7 @@ LOOP: while (<R1>) {
         }
         for my $j (@y) {
 	          print W3 "$j\n";
-	      }
+	}
     }
 }
 
