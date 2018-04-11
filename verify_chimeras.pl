@@ -74,7 +74,16 @@ LOOP: while (<R1>) {
     $cutsites += () = $x[1] =~ m/$cut/g;
     $cutsites += () = $y[1] =~ m/$cut/g;
 
-    if ($cutsites == 2) {
+    my $max_cutsites = 0;
+    if ($cut eq $rmn) {
+	# If the cut site is completely kept as the remnant, the regexp
+	# above will match it at the very start of the read. In that case,
+	# the minimum number of matches will be 2, because we've already
+	# verified that both reads have the remnant in the beginning.
+	$max_cutsites = 2;
+    }
+
+    if ($cutsites == $max_cutsites) {
         $paired++;
         for my $i (@x) {
 	          print W1 "$i\n";
