@@ -13,7 +13,7 @@ the scripts take advantage of by using the adapters as barcodes), and is fast.
 
 The scripts should be run in order:
 
-batch_trim.pl: This program will take a list of fastq reads and barcodes, and wrap around
+**batch_trim.pl**: This program will take a list of fastq reads and barcodes, and wrap around
 TrimGalore (which, in turn, is also a wrapper) to remove as much adapter as possible, as
 well as the barcodes from the reverse complement of the reads (i.e., the barcode when the
 GBS tag is shorter than the read length of the Illumina instrument). Trimming by Illumina
@@ -35,7 +35,7 @@ verify_chimeras: This program takes the output of the previous job and looks for
 with multiple consecutive cutsites. run the script with no parameters to get the help
 on what the software expects, but basically it wants:
 
-verify_chimeras.pl reads1 reads2 cutsite cutsite_remnant output_directory
+**verify_chimeras.pl** reads1 reads2 cutsite cutsite_remnant output_directory
 
 The first two parameters (reads1 and reads2) are self-explanatory, the Illumina reads coming
 out of the trimming.
