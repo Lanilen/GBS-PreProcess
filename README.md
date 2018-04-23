@@ -4,7 +4,9 @@ potentially, any other GBS pipeline. The scripts will trim reads down by cut sit
 universal illumina adapter, taking into account the enzyme used and the barcodes.
 
 Prerrequisites:
+
     1. Perl. The scripts use simple regexp perl, so it should be compatible with even ancient perl versions.
+
     2. TrimGalore.
 
 Other trimming software can be used, but the code will have to be modified. TrimGalore is
