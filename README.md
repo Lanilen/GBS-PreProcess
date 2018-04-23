@@ -31,18 +31,19 @@ independently, so they can be the same if the user wants to. The code will creat
 cutadapt job for each pair of files with the right barcodes prepared for trimming and
 with the Illumina universal adapter.
 
-verify_chimeras: This program takes the output of the previous job and looks for reads
+**verify_chimeras.pl**: This program takes the output of the previous job and looks for reads
 with multiple consecutive cutsites. run the script with no parameters to get the help
 on what the software expects, but basically it wants:
 
-**verify_chimeras.pl** reads1 reads2 cutsite cutsite_remnant output_directory
+verify_chimeras.pl reads1 reads2 cutsite cutsite_remnant output_directory
 
 The first two parameters (reads1 and reads2) are self-explanatory, the Illumina reads coming
 out of the trimming.
 
-The cutsite is the **remnant** of the enzyme cut site, and takes the form of a regular
+The first cutsite is the full **cutsite**, not the **remnant** of the enzyme cut site,
+and for the sake of making things easier, it takes the form of a perl type regular
 expression. So, for example, ApeKI is GC\[AT\]GC and **not** GCWGC. The same goes for the
-remnant, it'll be C\{AT\}GC. The software will look for cut sites in a single read,
+remnant, it'll be C\[AT\]GC. The software will look for cut sites in a single read,
 and remove anything other than the first valid fragment. If there are no cut sites, the
 reads are considered valid pairs and output separately. If there are cutsites, the read
 is a chimera and it's written as such, with the two ends written as single files because
@@ -50,4 +51,5 @@ they really aren't paired, just two random fragments that ended up joined togeth
 sequenced in one go.
 
 If the reads are missing the initial remnant, they're considered invalid and discarded
-completely.
+completely. If you want to skip this first remnant check completely, just enter a . as the
+remnant and all reads will be valid (have a valid "any character, once" at the start of it).
