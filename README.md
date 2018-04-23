@@ -6,7 +6,6 @@ universal illumina adapter, taking into account the enzyme used and the barcodes
 Prerrequisites:
 
     1. Perl. The scripts use simple regexp perl, so it should be compatible with even ancient perl versions.
-
     2. TrimGalore.
 
 Other trimming software can be used, but the code will have to be modified. TrimGalore is
@@ -24,9 +23,9 @@ reads are then trimmed by cutsite if there's sequencing errors in the multiple c
 
 The script requires a tab-separated "keyfile" containing the following information:
 
-sampleA_1.fq sampleA_2.fq barcode1 barcode2
-sampleB_1.fq sampleB_2.fq barcode1 barcode2
-(...)
+    sampleA_1.fq sampleA_2.fq barcode1 barcode2
+    sampleB_1.fq sampleB_2.fq barcode1 barcode2
+    (...)
 
 Headers are optional and only useful for human-reading purpose. The barcodes are read
 independently, so they can be the same if the user wants to. The code will create a
