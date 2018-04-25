@@ -34,9 +34,9 @@ open (R1, $ARGV[0]) || die;
 open (R2, $ARGV[1]) || die;
 my $cut = $ARGV[2];
 my $rmn = $ARGV[3];
-open (W1, ">$ARGV[4]/$ARGV[0]") || die;
-open (W2, ">$ARGV[4]/$ARGV[1]") || die;
-open (W3, ">$ARGV[4]/$ARGV[0].singles.fq") || die;
+open (W1, ">$ARGV[4]/ver_$ARGV[0]") || die;
+open (W2, ">$ARGV[4]/ver_$ARGV[1]") || die;
+open (W3, ">$ARGV[4]/ver_$ARGV[0].singles.fq") || die;
 
 my $discarded = 0;
 my $paired;
