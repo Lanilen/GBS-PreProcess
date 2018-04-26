@@ -95,12 +95,17 @@ LOOP: while (<R1>) {
     else {
         $unpaired++;
         $x[1] =~ s/^($rmn.*?$cut).*/\1/;
-        $y[1] =~ s/^($rmn.*?$cut).*/\1/;
+        $y[1] =~ s/^($rmn.*?$cut).*/\1/; # The regexp _includes_ the full cutsite
+	
+	$x[1] =~ s/$rmn$//;
+	$y[1] =~ s/$rnm$//; # We remove the remnant from the cutsite at the end
+	                    # since it comes from the chimera. The only thing left
+			    # should be the non-remnant recognition site bases
 
 	# Note that proper non-chimeric GBS tags that are shorter than the
-	# read length have two cut sites (what they read depends on whether
+	# read length may have two cut sites (what they read depends on whether
 	# the cut site is a palindrome), so the regexp above might or might
-	# not catch them. if it does, they will STILL be placed
+	# not catch them. If it does, they will STILL be placed
 	# in the unpaired list, but that makes sense. FWD and REV are
 	# identical, so pair-end mapping makes zero sense (and can break some
 	# mapping software to boot). In principle the pair-end overlap might
