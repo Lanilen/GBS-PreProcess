@@ -34,7 +34,13 @@ LOOP: while (<READ>) {
     if ($#x != 2) {
         die "Wrong number of columns, line $.\n";
     }
-    my $out = `head -n 2 $x[0] | tail -n 1`;
+    my $out;
+    if ($x[0] =~ /\.gz/) {
+        $out = `zcat $x[0] | head -n 2 | tail -n 1`;
+    }
+    else {
+        $out = `head -n 2 $x[0] | tail -n 1`;
+    }
     chomp($out);
 
     if (length($out) < $readlength) {
