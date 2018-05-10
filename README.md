@@ -14,8 +14,11 @@ Prerrequisites:
       Most of these should be part of your standard installation. If not, add them with:
         cpan install [module name]
     2. TrimGalore (https://github.com/FelixKrueger/TrimGalore) installed somewhere in your $PATH
-    3. TrimGalore itself requires cutadapt (https://github.com/marcelm/cutadapt), which can easily be installed with pip (pip install --user --upgrade cutadapt). If after the pip installation you can't run it, add ~/.local/bin/ to your $PATH.
-    4. Trimgalore also requires FastQC under regular installation circumstances, but this wrapper doesn't generate fastqc reports so it can be skipped.
+    3. TrimGalore itself requires cutadapt (https://github.com/marcelm/cutadapt),
+       which can easily be installed with pip (pip install --user --upgrade cutadapt). If after
+       the pip installation you can't run it, add ~/.local/bin/ to your $PATH.
+    4. Trimgalore also requires FastQC under regular installation circumstances, but this
+       wrapper doesn't generate fastqc reports so it can be skipped.
 
 Other trimming software can be used, but the code will have to be modified. TrimGalore is
 useful because it allows for the trimming based on different adapters for each end (which
@@ -40,6 +43,8 @@ reads are then trimmed by cutsite if there's sequencing errors in the multiple c
 independently, so they can be the same if the user wants to. The code will create a
 cutadapt job for each pair of files with the right barcodes prepared for trimming and
 with the Illumina universal adapter.
+
+--**OR**--
 
 **batch_trim_se.pl**: A single-end version of the batch_trim.pl script. It works in the
 exact same way as batch_trim.pl: It will take a list of fastq reads and barcodes, and
