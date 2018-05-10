@@ -16,6 +16,9 @@ use IO::CaptureOutput qw/capture/;
 my $usage = "Usage: $0 [parameters] --in input_keyfile
 
 Optional parameters:
+ -d Dry run, print a list of commands that will be run but
+    run nothing. This is useful if you want to send the tasks
+    to your favourite computer cluster or task manager.
  -g Create compressed GZIP output (default: Don't GZIP);
  -h This help menu.
  -t [int] Number of threads (default = 1).
@@ -47,16 +50,20 @@ my $help;
 my $threads = 1;
 my $keyfile;
 my $gzip;
+my $dry_run;
 GetOptions ('h' => \$help,
             't=i' => \$threads,
             'i=s' => \$keyfile,
-            'gzip' => \$gzip);
+            'g' => \$gzip,
+            'd' => \$dry_run);
 if ($help) {
     die $usage;
 }
 unless (-e $keyfile) {
     die "Error: Keyfile not found!\n\nUse $0 -h for help";
 }
+
+
 
 my @commands;
 my @output :shared;
@@ -120,6 +127,13 @@ LOOP: while (<READ>) {
     #system("skewer -m pe -Q 30 -q 0 -t 16 -n -l $readlength --quiet $x[0] $x[1]");
 }
 close READ;
+
+if ($dry_run) {
+    for my $i (@commands) {
+	print $i, "\n";
+    }
+    exit;
+}
 
 my $threadcount = -1;
 my $sem = Thread::Semaphore->new($threads);
