@@ -3,6 +3,10 @@ Scripts to pre-process Genotyping-by-Sequencing data (GBS) before analysis with 
 potentially, any other GBS pipeline. The scripts will trim reads down by cut site and the
 universal illumina adapter, taking into account the enzyme used and the barcodes.
 
+The code was specifically made for trimming data from double-barcode GBS experiments. If
+you use standard barcodes in only the first end (or just single-end reads) you can use the
+data directly with TASSEL without fussing about with this software.
+
 Prerrequisites:
 
     1. Perl, with the following modules:
