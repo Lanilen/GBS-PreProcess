@@ -72,8 +72,9 @@ with the Illumina universal adapter.
 
 This script incorporates additional options:
 
-    -t [int] Number of threads to run in parallel.
+    -t [int] Number of threads to run in parallel (default = 1)
     -g GZIP the output of TrimGalore
+    -d Do a dry run (print all commands without running them)
 
  Barcode1 is not technically used, but it's useful to leave there for consistency.
  
