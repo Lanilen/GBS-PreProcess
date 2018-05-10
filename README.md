@@ -26,7 +26,7 @@ Prerrequisites:
 
 Other trimming software can be used, but the code will have to be modified. TrimGalore is
 useful because it allows for the trimming based on different adapters for each end (which
-the scripts take advantage of by using the adapters as barcodes), and is fast.
+the scripts take advantage of by using the barcodes as adapters), and is fast.
 
 The scripts should be run in order:
 
