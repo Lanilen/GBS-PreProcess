@@ -1,17 +1,39 @@
 #!/usr/bin/perl
 
+use strict;
+
+use Getopt::Long;
+
+use threads;
+use threads::shared;
+use Thread::Semaphore;
+
+use IO::CaptureOutput qw/capture/;
+
 # Input should be a space/tab separated file containing both ends
 # of the sample in separate files (skewer can't do interleaved)
 
-my $usage = "$0 prepared_keyfile\n
+my $usage = "Usage: $0 [parameters] --in input_keyfile
+
+Optional parameters:
+ -g Create compressed GZIP output (default: Don't GZIP);
+ -h This help menu.
+ -t [int] Number of threads (default = 1).
+
+
  The prepared_keyfile should be a file containing the following data:
 
  Read1.fq Barcode1 Barcode2
 
- There are no headers, the order is the thing taken into account. The
-script will run the trimming software with the illumina universal adapter
-as the contaminant to remove, but will prepend the reverse complement of
-the opposite barcode to it too (i.e., barcode2 when trimming read1).
+ There are no headers, the order is the thing taken into account. You
+can add headers if you want with a hash # symbol at the start for human-
+readable purposes, but any line starting with a # will be ignored (so
+you can plut comments in the middle of the keyfile if you so wish).
+
+ The script will run the trimming software with the illumina universal
+adapter as the contaminant to remove, but will prepend the reverse
+complement of the opposite barcode to it too (i.e., barcode2 when
+trimming read1).
 
  The objective is to remove the barcode as well as the universal adapter,
 leaving the cut site at the end (if any) clean and intact. You might then
@@ -20,11 +42,26 @@ means it's chimeric), but you might not. And doing it this way ensures you
 get the DNA that was sequenced, and that sequencing errors in the cut site
 won't leave you with reads that have the barcode too.\n\n";
 
-unless ($#ARGV == 0) {
+# Parse the command line
+my $help;
+my $threads = 1;
+my $keyfile;
+my $gzip;
+GetOptions ('h' => \$help,
+            't=i' => \$threads,
+            'i=s' => \$keyfile,
+            'gzip' => \$gzip);
+if ($help) {
     die $usage;
 }
+unless (-e $keyfile) {
+    die "Error: Keyfile not found!\n\nUse $0 -h for help";
+}
 
-open (READ, $ARGV[0]) || die "Can't open list of files $ARGV[0]\n";
+my @commands;
+my @output :shared;
+
+open (READ, $keyfile) || die "Can't open keyfile $keyfile\n";
 LOOP: while (<READ>) {
     if (/^\#/) {
         next LOOP;
@@ -43,6 +80,8 @@ LOOP: while (<READ>) {
     }
     chomp($out);
 
+    my $readlength = 0;
+
     if (length($out) < $readlength) {
         $readlength = length($out);
     }
@@ -60,7 +99,15 @@ LOOP: while (<READ>) {
     $x[2] = &revcomp($x[2]);
     $x[2] .= "AGATCGGAAGAGC";
 
-    system("trim_galore -q 0 --gzip -e 0.1 -a $x[2] $x[0]");
+    my $runfile = "trim_galore -q 0 -e 0.1 -a $x[2] ";
+    if ($gzip) {
+	$runfile .= "--gzip ";
+    }
+    $runfile .= $x[0];
+
+    push (@commands, $runfile);
+    
+#    system("trim_galore -q 0 --gzip -e 0.1 -a $x[2] $x[0]");
 #    system("~/Downloads/TrimGalore-0.4.3/trim_galore -q 0 --dont_gzip -e 0.1 --paired $x[0] $x[1]");
     # Below is in case we want to use Skewer (doesn't work at all when
     # the adapter isn't at the very end, in the case of GBS this happens a
@@ -74,9 +121,31 @@ LOOP: while (<READ>) {
 }
 close READ;
 
+my $threadcount = -1;
+my $sem = Thread::Semaphore->new($threads);
+my @threads = map{
+    $sem->down;
+    $threadcount++;
+    threads->create(\&run_command, ($_, $threadcount))
+} @commands;
+
+print @output;
+
 sub revcomp {
     my ($seq) = @_;
     $seq = reverse $seq;
     $seq =~ tr/ACTG/TGAC/;
     return $seq;
+}
+
+sub run_command {
+    my ($job, $i) = @_;
+    sleep(int(rand(2)));
+    my ($stdout, $stderr);
+    capture sub {
+	system("$job");
+    } => \$stdout, \$stderr;
+    $output[$i] = $stdout;
+    $output[$i] .= $stderr;
+    $sem->up; #Slot released and available
 }
