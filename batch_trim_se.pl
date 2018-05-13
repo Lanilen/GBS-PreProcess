@@ -13,7 +13,7 @@ use IO::CaptureOutput qw/capture/;
 # Input should be a space/tab separated file containing both ends
 # of the sample in separate files (skewer can't do interleaved)
 
-my $usage = "Usage: $0 [parameters] --in input_keyfile
+my $usage = "Usage: $0 [parameters] -i input_keyfile
 
 Optional parameters:
  -d Dry run, print a list of commands that will be run but
@@ -31,7 +31,7 @@ Optional parameters:
  There are no headers, the order is the thing taken into account. You
 can add headers if you want with a hash # symbol at the start for human-
 readable purposes, but any line starting with a # will be ignored (so
-you can plut comments in the middle of the keyfile if you so wish).
+you can put comments in the middle of the keyfile if you so wish).
 
  The script will run the trimming software with the illumina universal
 adapter as the contaminant to remove, but will prepend the reverse
