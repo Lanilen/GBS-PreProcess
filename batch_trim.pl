@@ -57,7 +57,7 @@ LOOP: while (<READ>) {
     $x[3] = &revcomp($x[3]);
     $x[3] .= "AGATCGGAAGAGC";
 
-    system("~/Downloads/TrimGalore-0.4.3/trim_galore -q 0 --dont_gzip -e 0.1 --paired -a2 $x[2] -a $x[3] $x[0] $x[1]");
+    system("trim_galore -q 0 --dont_gzip -e 0.1 --paired -a2 $x[2] -a $x[3] $x[0] $x[1]");
 #    system("~/Downloads/TrimGalore-0.4.3/trim_galore -q 0 --dont_gzip -e 0.1 --paired $x[0] $x[1]");
     # Below is in case we want to use Skewer (doesn't work at all when
     # the adapter isn't at the very end, in the case of GBS this happens a
